@@ -196,12 +196,56 @@ class Server(BaseModel):
     channels: Channels
 
 
+class OAUHTFlow(BaseModel):
+    authorizationUrl: str
+    tokenUrl: str
+    refreshUrl: Optional[str]
+    scopes: Dict[str, str]
+
+
+class OAUHTFlows(BaseModel):
+    implicit: Optional[OAUHTFlow]
+    password: Optional[OAUHTFlow]
+    clientCredentials: Optional[OAUHTFlow]
+    authorizationCode: Optional[OAUHTFlow]
+
+
+class SecurityScheme(BaseModel):
+    type: str
+    description: Optional[str]
+    name: str
+    _in: str = Field(alias='in')
+    scheme: str
+    bearerFormat: Optional[str]
+    flows: OAUHTFlows
+    openIdConnectUrl: str
+
+
+ServerBinding = Dict[str, Any]
+
+ChannelBinding = Dict[str, Any]
+
+
+class Components(BaseModel):
+    schemas: Optional[Dict[str, Union[Schema, Reference]]]
+    messages: Optional[Dict[str, Union[Message, Reference]]]
+    securitySchemes: Optional[Dict[str, Union[SecurityScheme, Reference]]]
+    parameters: Optional[Dict[str, Union[Parameter, Reference]]]
+    correlationIds: Optional[Dict[str, Union[CorrelationID, Reference]]]
+    operationTraits: Optional[Dict[str, CorrelationID]]
+    messageTraits: Optional[Dict[str, MessageTrait]]
+    serverBindings: Optional[Dict[str, ServerBinding]]
+    channelBindings: Optional[Dict[str, ChannelBinding]]
+    operationBindings: Optional[Dict[str, OperationBinding]]
+    messageBindings: Optional[Dict[str, MessageBinding]]
+
+
 class AsyncAPI(BaseModel):
     asyncapi: str
     id: Optional[str]
     info: Info
     servers: Optional[List[Dict[str, Server]]]
     channels: Optional[Channels]
-    # components:
+    components: Optional[Components]
     tags: Optional[List[Tag]]
     externalDocs: Optional[ExternalDocumentation]
