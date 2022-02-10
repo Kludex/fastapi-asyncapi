@@ -1,8 +1,9 @@
 from typing import Any, Dict, List, Optional, Union
-from typing_extensions import Literal
-from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field
 
-ASYNCAPI_VERSION = '2.3.0'
+from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field
+from typing_extensions import Literal
+
+ASYNCAPI_VERSION = "2.3.0"
 
 
 class Contact(BaseModel):
@@ -94,7 +95,7 @@ OperationTraits = List[OperationTrait]
 
 
 class Reference(BaseModel):
-    ref: Optional[str] = Field(alias='$ref')
+    ref: Optional[str] = Field(alias="$ref")
 
 
 class CorrelationID(BaseModel):
@@ -178,7 +179,7 @@ ChannelBindings = Dict[str, Any]
 
 
 class ChannelItem(BaseModel):
-    ref: Optional[str] = Field(alias='$ref')
+    ref: Optional[str] = Field(alias="$ref")
     description: Optional[str]
     servers: Optional[List[str]]
     subscribe: Optional[Subscribe]
@@ -221,7 +222,7 @@ class SecurityScheme(BaseModel):
     type: str
     description: Optional[str]
     name: str
-    _in: str = Field(alias='in')
+    _in: str = Field(alias="in")
     scheme: str
     bearerFormat: Optional[str]
     flows: OAUHTFlows

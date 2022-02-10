@@ -7,7 +7,15 @@ from fastapi.routing import APIRoute
 from pydantic import AnyHttpUrl
 from starlette.routing import BaseRoute
 
-from fastapi_asyncapi.schema import Contact, License, Tag, Server, Info, Channels, AsyncAPI
+from fastapi_asyncapi.schema import (
+    AsyncAPI,
+    Channels,
+    Contact,
+    Info,
+    License,
+    Server,
+    Tag,
+)
 
 
 def get_asyncapi(
@@ -89,7 +97,5 @@ async def asyncapi_json():
 
 @app.get("/docs")
 async def asyncapi_docs():
-    asyncapi_url = AnyHttpUrl("http://localhost:8000/asyncapi.json")
-    return get_asyncapi_html(
-        asyncapi_url=asyncapi_url, title=app.title
-    )
+    asyncapi_url = AnyHttpUrl("http://localhost:8000/asyncapi.json", scheme="http")
+    return get_asyncapi_html(asyncapi_url=asyncapi_url, title=app.title)
