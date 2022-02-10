@@ -1,8 +1,8 @@
-from typing import Dict, Optional, List, Literal, Any, Union
+from typing import Any, Dict, List, Optional, Union
+from typing_extensions import Literal
+from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field
 
-from pydantic import BaseModel, AnyHttpUrl, EmailStr, Field
-
-ASYNCAPI_VERSION = '2.0.0'
+ASYNCAPI_VERSION = '2.3.0'
 
 
 class Contact(BaseModel):
@@ -129,6 +129,7 @@ class MessageTrait(BaseModel):
     bindings: Optional[MessageBinding]
     examples: Optional[ExamplesMessages]
 
+
 MessagesTraits = List[MessageTrait]
 
 
@@ -173,17 +174,23 @@ class Parameter(BaseModel):
 Parameters = List[Dict[str, Union[Parameter, Reference]]]
 
 
-class Channel(BaseModel):
+ChannelBindings = Dict[str, Any]
+
+
+class ChannelItem(BaseModel):
     ref: Optional[str] = Field(alias='$ref')
     description: Optional[str]
+    servers: Optional[List[str]]
     subscribe: Optional[Subscribe]
     publish: Optional[Publish]
     parameters: Optional[Parameters]
-    bindings: Optional[Bindings]
+    bindings: Optional[Union[ChannelBindings, Reference]]
 
 
 Security = Dict[str, List[str]]
-Channels = List[Dict[str, Channel]]
+Channels = Dict[str, ChannelItem]
+SecurityRequirement = Dict[str, List[str]]
+ServerBinding = Dict[str, Any]
 
 
 class Server(BaseModel):
@@ -191,9 +198,9 @@ class Server(BaseModel):
     protocol: Protocol
     protocolVersion: Optional[str]
     description: Optional[str]
-    variables: Optional[List[Dict[str, ServerVariable]]]
-    security: Optional[List[Security]]
-    channels: Channels
+    variables: Optional[Dict[str, ServerVariable]]
+    security: Optional[SecurityRequirement]
+    bindings: Optional[Union[ServerBinding, Reference]]
 
 
 class OAUHTFlow(BaseModel):
@@ -221,31 +228,32 @@ class SecurityScheme(BaseModel):
     openIdConnectUrl: str
 
 
-ServerBinding = Dict[str, Any]
-
 ChannelBinding = Dict[str, Any]
 
 
 class Components(BaseModel):
     schemas: Optional[Dict[str, Union[Schema, Reference]]]
+    servers: Optional[Dict[str, Union[Server, Reference]]]
+    channels: Optional[Dict[str, ChannelItem]]
     messages: Optional[Dict[str, Union[Message, Reference]]]
     securitySchemes: Optional[Dict[str, Union[SecurityScheme, Reference]]]
     parameters: Optional[Dict[str, Union[Parameter, Reference]]]
     correlationIds: Optional[Dict[str, Union[CorrelationID, Reference]]]
-    operationTraits: Optional[Dict[str, CorrelationID]]
-    messageTraits: Optional[Dict[str, MessageTrait]]
-    serverBindings: Optional[Dict[str, ServerBinding]]
-    channelBindings: Optional[Dict[str, ChannelBinding]]
-    operationBindings: Optional[Dict[str, OperationBinding]]
-    messageBindings: Optional[Dict[str, MessageBinding]]
+    operationTraits: Optional[Dict[str, Union[OperationTraits, Reference]]]
+    messageTraits: Optional[Dict[str, Union[MessageTrait, Reference]]]
+    serverBindings: Optional[Dict[str, Union[ServerBinding, Reference]]]
+    channelBindings: Optional[Dict[str, Union[ChannelBinding, Reference]]]
+    operationBindings: Optional[Dict[str, Union[OperationBinding, Reference]]]
+    messageBindings: Optional[Dict[str, Union[MessageBinding, Reference]]]
 
 
 class AsyncAPI(BaseModel):
     asyncapi: str
     id: Optional[str]
     info: Info
-    servers: Optional[List[Dict[str, Server]]]
-    channels: Optional[Channels]
+    servers: Optional[Dict[str, Server]]
+    defaultContentType: Optional[str]
+    channels: Channels
     components: Optional[Components]
     tags: Optional[List[Tag]]
     externalDocs: Optional[ExternalDocumentation]

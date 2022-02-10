@@ -1,13 +1,13 @@
-from typing import Any, Dict, List, Literal, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence
 
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
-from fastapi.openapi.utils import get_openapi
 from fastapi.responses import HTMLResponse
 from fastapi.routing import APIRoute
-from pydantic import AnyHttpUrl, BaseModel, EmailStr
+from pydantic import AnyHttpUrl
 from starlette.routing import BaseRoute
-from typing_extensions import TypedDict
+
+from fastapi_asyncapi.schema import Contact, License, Tag, Server, Info, Channels, AsyncAPI
 
 
 def get_asyncapi(
@@ -18,7 +18,7 @@ def get_asyncapi(
     asyncapi_version: str = "2.0.0",
     id: Optional[str] = None,
     description: Optional[str] = None,
-    termsOfService: Optional[AnyHttpUrl] = None,
+    terms_of_service: Optional[AnyHttpUrl] = None,
     contact: Optional[Contact] = None,
     license: Optional[License] = None,
     tags: Optional[List[Tag]] = None,
@@ -28,19 +28,23 @@ def get_asyncapi(
         title=title,
         version=version,
         description=description,
-        termsOfService=termsOfService,
+        termsOfService=terms_of_service,
         contact=contact,
         license=license,
     )
-    channels: Channels = []
+    channels: Channels = {}
     for route in routes:
         if isinstance(route, APIRoute):
-            channels.append()
             print(route.endpoint)
 
     return jsonable_encoder(
         AsyncAPI(
-            asyncapi=asyncapi_version, id=id, info=info, tags=tags, servers=servers
+            asyncapi=asyncapi_version,
+            id=id,
+            info=info,
+            tags=tags,
+            servers=servers,
+            channels=channels,
         ),
         by_alias=True,
         exclude_none=True,
@@ -85,6 +89,7 @@ async def asyncapi_json():
 
 @app.get("/docs")
 async def asyncapi_docs():
+    asyncapi_url = AnyHttpUrl("http://localhost:8000/asyncapi.json")
     return get_asyncapi_html(
-        asyncapi_url="http://localhost:8000/asyncapi.json", title=app.title
+        asyncapi_url=asyncapi_url, title=app.title
     )
