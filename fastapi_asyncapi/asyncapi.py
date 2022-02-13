@@ -9,6 +9,7 @@ from starlette.routing import BaseRoute
 
 from fastapi_asyncapi.schema import (
     AsyncAPI,
+    ChannelItem,
     Channels,
     Contact,
     Info,
@@ -23,7 +24,7 @@ def get_asyncapi(
     title: str,
     version: str,
     routes: Sequence[BaseRoute],
-    asyncapi_version: str = "2.0.0",
+    asyncapi_version: str = "2.3.0",
     id: Optional[str] = None,
     description: Optional[str] = None,
     terms_of_service: Optional[AnyHttpUrl] = None,
@@ -43,6 +44,11 @@ def get_asyncapi(
     channels: Channels = {}
     for route in routes:
         if isinstance(route, APIRoute):
+            channel = ChannelItem(
+                ref=route.path,
+                description=route.description,
+            )
+            channels[route.path] = channel
             print(route.endpoint)
 
     return jsonable_encoder(

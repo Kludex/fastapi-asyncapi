@@ -1,7 +1,12 @@
+import sys
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field
-from typing_extensions import Literal
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Literal
+else:
+    from typing import Literal
 
 ASYNCAPI_VERSION = "2.3.0"
 
@@ -168,7 +173,7 @@ Publish = Operation
 
 class Parameter(BaseModel):
     description: Optional[str]
-    schema: Optional[Schema]
+    _schema: Optional[Schema] = Field(alias="schema")
     location: Optional[str]
 
 
