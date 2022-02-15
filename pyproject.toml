@@ -24,7 +24,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
-pydantic = "^1.9.0"
+pydantic = {extras = ["email"], version = "^1.9.0"}
 fastapi = "^0.73.0"
 
 [tool.poetry.dev-dependencies]
