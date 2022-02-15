@@ -1,14 +1,12 @@
 import sys
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field
+from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field, Json
 
 if sys.version_info < (3, 8):
-    from typing_extensions import Literal
+    from typing_extensions import Literal, TypeAlias
 else:
-    from typing import Literal
-
-ASYNCAPI_VERSION = "2.3.0"
+    from typing import Literal, TypeAlias
 
 
 class Contact(BaseModel):
@@ -27,10 +25,16 @@ class Tag(BaseModel):
     description: Optional[str]
     externalDocs: Optional[ExternalDocumentation]
 
+    class Config:
+        extra = "allow"
+
 
 class License(BaseModel):
     name: str
     url: Optional[str]
+
+    class Config:
+        extra = "allow"
 
 
 class Info(BaseModel):
@@ -40,6 +44,9 @@ class Info(BaseModel):
     termsOfService: Optional[AnyHttpUrl]
     contact: Optional[Contact]
     license: Optional[License]
+
+    class Config:
+        extra = "allow"
 
 
 Protocol = Literal[
@@ -61,16 +68,19 @@ Protocol = Literal[
 
 class ServerVariable(BaseModel):
     enum: Optional[List[str]]
-    default: str
+    default: Optional[str]
     description: Optional[str]
     examples: Optional[List[str]]
+
+    class Config:
+        extra = "allow"
 
 
 HTTPMethod = Literal[
     "GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"
 ]
 
-Schema = Dict[str, Any]
+Schema: TypeAlias = Json
 
 
 class HTTPOperationBinding(BaseModel):
@@ -100,7 +110,7 @@ OperationTraits = List[OperationTrait]
 
 
 class Reference(BaseModel):
-    ref: Optional[str] = Field(alias="$ref")
+    ref: str = Field(..., alias="$ref")
 
 
 class CorrelationID(BaseModel):
@@ -252,6 +262,9 @@ class Components(BaseModel):
     operationBindings: Optional[Dict[str, Union[OperationBinding, Reference]]]
     messageBindings: Optional[Dict[str, Union[MessageBinding, Reference]]]
 
+    class Config:
+        extra = "allow"
+
 
 class AsyncAPI(BaseModel):
     asyncapi: str
@@ -263,3 +276,6 @@ class AsyncAPI(BaseModel):
     components: Optional[Components]
     tags: Optional[List[Tag]]
     externalDocs: Optional[ExternalDocumentation]
+
+    class Config:
+        extra = "allow"
