@@ -1,12 +1,24 @@
 import sys
+from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field, Json
+from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field, Json, root_validator
 
 if sys.version_info < (3, 8):
     from typing_extensions import Literal, TypeAlias
 else:
     from typing import Literal, TypeAlias
+
+
+def get_supported_scopes(
+    flows: Dict[str, Optional[Dict[str, str]]],
+) -> List[str]:
+    scopes = []
+    for key, value in flows.items():
+        if value:
+            for scope in value["scopes"]:
+                scopes.append(scope)
+    return scopes
 
 
 class Contact(BaseModel):
@@ -233,8 +245,28 @@ class OAUHTFlows(BaseModel):
     authorizationCode: Optional[OAUHTFlow]
 
 
+class SecuritySchemesType(Enum):
+    """
+    https://www.asyncapi.com/docs/specifications/v2.3.0#securitySchemeObjectType
+    """
+
+    USER_PASSWORD = "userPassword"
+    API_KEY = "apiKey"
+    X509 = "X509"
+    SYMMETRIC_ENCRYPTION = "symmetricEncryption"
+    ASYMMETRIC_ENCRYPTION = "asymmetricEncryption"
+    HTTP_API_KEY = "httpApiKey"
+    HTTP = "http"
+    OAUTH2 = "oauth2"
+    OPENID_CONNECT = "openIdConnect"
+    PLAIN = "plain"
+    SCRAM_SHA256 = "scramSha256"
+    SCRAM_SHA512 = "scramSha512"
+    GSSAPI = "gssapi"
+
+
 class SecurityScheme(BaseModel):
-    type: str
+    type: SecuritySchemesType
     description: Optional[str]
     name: str
     _in: str = Field(alias="in")
@@ -276,6 +308,67 @@ class AsyncAPI(BaseModel):
     components: Optional[Components]
     tags: Optional[List[Tag]]
     externalDocs: Optional[ExternalDocumentation]
+
+    @root_validator(pre=True)
+    def validate_security(cls, values):
+        for server_name, server in values.get("servers").items():
+            for security_req in server["security"]:
+                cls._validate_security_requirement(security_req, server, values)
+
+    @classmethod
+    def _validate_security_requirement(
+        cls,
+        requirement: SecurityRequirement,
+        required_by: str,
+        values,
+    ) -> None:
+        (security_scheme_name, scopes), *other = requirement.items()
+
+        if other:
+            raise ValueError(
+                f"{required_by} contains invalid "
+                f"security requirement: {requirement}"
+            )
+
+        security_scheme = cls.__get_security_scheme(values, security_scheme_name)
+        if security_scheme is None:
+            raise ValueError(
+                f"{security_scheme_name} referenced within '{requirement}'"
+                " server does not exist in components/securitySchemes"
+            )
+
+        if scopes:
+            if security_scheme["type"] not in [
+                SecuritySchemesType.OAUTH2.value,
+                SecuritySchemesType.OPENID_CONNECT.value,
+            ]:
+                raise ValueError(
+                    "Scopes MUST be an empty array for "
+                    f"{security_scheme['type']} security requirements"
+                )
+            check_type = security_scheme["type"] == SecuritySchemesType.OAUTH2.value
+            if check_type and security_scheme["flows"]:
+                supported_scopes = get_supported_scopes(security_scheme["flows"])
+
+                for scope in scopes:
+                    if scope not in supported_scopes:
+                        raise ValueError(
+                            f"OAuth2 scope {scope} is not defined within "
+                            f"the {security_scheme_name} security scheme"
+                        )
+
+    @classmethod
+    def __get_security_scheme(
+        cls,
+        values: Dict[str, Any],
+        security_scheme_name: str,
+    ) -> Optional[Dict[str, Any]]:
+        security_scheme = None
+        components = values.get("components")
+        if components:
+            security_schemes = components.get("securitySchemes")
+            security_scheme = security_schemes.get(security_scheme_name)
+        return security_scheme
 
     class Config:
         extra = "allow"
