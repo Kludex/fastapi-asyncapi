@@ -18,7 +18,7 @@ def home():
     </head>
     <body>
         <!-- Remove 'webcomponentsjs' if no support for older browsers is required -->
-        <script src="https://unpkg.com/@asyncapi/web-component@0.19.0/lib/asyncapi-web-component.js" defer></script>
+        <script src="https://unpkg.com/@asyncapi/web-component@0.19.0/lib/asyncapi-web-component.js" defer></script>  # noqa: E501
 
         <asyncapi-component
             schemaUrl="http://localhost:8000/asyncapi.json"
@@ -28,8 +28,6 @@ def home():
     </html>
     """
     return HTMLResponse(html_page)
-
-    # schemaUrl="https://raw.githubusercontent.com/asyncapi/asyncapi/master/examples/2.0.0/streetlights.yml"
 
 
 @app.get("/asyncapi.json")
@@ -49,7 +47,7 @@ def asyncapi_json():
             "user/signedup": {
                 "subscribe": {
                     "message": {
-                        "description": "An event describing that a user just signed up.",
+                        "description": "An event describing.",
                         "payload": {
                             "type": "object",
                             "additionalProperties": False,

@@ -6,6 +6,10 @@ from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field, Json, root_validato
 
 if sys.version_info < (3, 8):
     from typing_extensions import Literal, TypeAlias
+elif sys.version_info < (3, 10):
+    from typing import Literal
+
+    from typing_extensions import TypeAlias
 else:
     from typing import Literal, TypeAlias
 
@@ -245,7 +249,7 @@ class OAUHTFlows(BaseModel):
     authorizationCode: Optional[OAUHTFlow]
 
 
-class SecuritySchemesType(Enum):
+class SecuritySchemesType(str, Enum):
     """
     https://www.asyncapi.com/docs/specifications/v2.3.0#securitySchemeObjectType
     """

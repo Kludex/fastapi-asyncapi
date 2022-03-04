@@ -1,19 +1,7 @@
 import pytest
 from faker import Faker
-from fastapi.routing import APIRoute
 
-from fastapi_asyncapi.asyncapi import get_asyncapi
 from fastapi_asyncapi.schema import AsyncAPI
-
-
-def test_get_asyncapi():
-
-    path = "/test/path/"
-    title = "My async api"
-    version = "2.3.0"
-    routes = [APIRoute(path, lambda x: 1)]
-    result = get_asyncapi(title=title, version=version, routes=routes)
-    assert result
 
 
 def test_asyncapi_spec_validation_invalid_security_requirement_scopes(faker: Faker):

@@ -69,8 +69,8 @@ def get_asyncapi_html(
     *,
     asyncapi_url: AnyHttpUrl,
     title: str,
-    asyncapi_js_url: AnyHttpUrl = "https://unpkg.com/@asyncapi/web-component@0.19.0/lib/asyncapi-web-component.js",
-    asyncapi_css_url: AnyHttpUrl = "https://unpkg.com/@asyncapi/react-component@0.19.0/lib/styles/fiori.css",
+    asyncapi_js_url: AnyHttpUrl = "https://unpkg.com/@asyncapi/web-component@0.19.0/lib/asyncapi-web-component.js",  # noqa: E501
+    asyncapi_css_url: AnyHttpUrl = "https://unpkg.com/@asyncapi/react-component@0.19.0/lib/styles/fiori.css",  # noqa: E501
 ):
     html = f"""
     <!DOCTYPE html>
