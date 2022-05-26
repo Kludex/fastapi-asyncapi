@@ -51,7 +51,7 @@ def get_asyncapi(
                 ref=route.path,
                 description=route.description,
                 subscribe=Subscribe(
-                    operationId=route.endpoint.__name__,  # TODO: Copy FastAPI here.
+                    operationId=route.unique_id,
                     bindings=Bindings(
                         http=HTTPOperationBinding(
                             type="request", method=next(iter(route.methods))
@@ -64,7 +64,7 @@ def get_asyncapi(
             channel = ChannelItem(
                 ref=route.path,
                 subscribe=Subscribe(
-                    operationId=route.endpoint.__name__,  # TODO: Copy FastAPI here.
+                    operationId=route.name,  # TODO: Create the same `unique_id`.
                     bindings=Bindings(ws=WSOperationBinding()),
                 ),
             )
