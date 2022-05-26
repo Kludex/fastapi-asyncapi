@@ -31,6 +31,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
 def test_application():
     schema = get_asyncapi(title=app.title, version=app.version, routes=app.routes)
+    # import json
+
     # print(json.dumps(schema, indent=4, sort_keys=True))
     assert schema == {
         "asyncapi": "2.4.0",
@@ -68,5 +70,6 @@ def test_application():
                 }
             },
         },
+        "defaultContentType": "application/json",
         "info": {"title": "MyAPI", "version": "1.0.0"},
     }
