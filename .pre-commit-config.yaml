@@ -9,12 +9,20 @@ repos:
           - --expand-star-imports
           - --remove-duplicate-keys
           - --remove-unused-variables
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - "flake8-print"
+
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.4.2
     hooks:
       - id: isort
-        args: ["--profile", "black"]
+
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 22.3.0
     hooks:
       - id: black

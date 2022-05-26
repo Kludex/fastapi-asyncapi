@@ -49,7 +49,6 @@ def get_asyncapi(
                 description=route.description,
             )
             channels[route.path] = channel
-            print(route.endpoint)
 
     return jsonable_encoder(
         AsyncAPI(
