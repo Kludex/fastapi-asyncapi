@@ -1,21 +1,24 @@
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Literal, Optional, Sequence
 
-from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
-from fastapi.routing import APIRoute
+from fastapi.routing import APIRoute, APIWebSocketRoute
 from pydantic import AnyHttpUrl
 from starlette.routing import BaseRoute
 
 from fastapi_asyncapi.schema import (
     AsyncAPI,
+    Bindings,
     ChannelItem,
     Channels,
     Contact,
+    HTTPOperationBinding,
     Info,
     License,
     Server,
+    Subscribe,
     Tag,
+    WSOperationBinding,
 )
 
 
@@ -24,7 +27,7 @@ def get_asyncapi(
     title: str,
     version: str,
     routes: Sequence[BaseRoute],
-    asyncapi_version: str = "2.3.0",
+    asyncapi_version: Literal["2.4.0"] = "2.4.0",
     id: Optional[str] = None,
     description: Optional[str] = None,
     terms_of_service: Optional[AnyHttpUrl] = None,
@@ -47,6 +50,23 @@ def get_asyncapi(
             channel = ChannelItem(
                 ref=route.path,
                 description=route.description,
+                subscribe=Subscribe(
+                    operationId=route.endpoint.__name__,  # TODO: Copy FastAPI here.
+                    bindings=Bindings(
+                        http=HTTPOperationBinding(
+                            type="request", method=next(iter(route.methods))
+                        )
+                    ),
+                ),
+            )
+            channels[route.path] = channel
+        elif isinstance(route, APIWebSocketRoute):
+            channel = ChannelItem(
+                ref=route.path,
+                subscribe=Subscribe(
+                    operationId=route.endpoint.__name__,  # TODO: Copy FastAPI here.
+                    bindings=Bindings(ws=WSOperationBinding()),
+                ),
             )
             channels[route.path] = channel
 
@@ -68,8 +88,8 @@ def get_asyncapi_html(
     *,
     asyncapi_url: AnyHttpUrl,
     title: str,
-    asyncapi_js_url: AnyHttpUrl = "https://unpkg.com/@asyncapi/web-component@0.19.0/lib/asyncapi-web-component.js",  # noqa: E501
-    asyncapi_css_url: AnyHttpUrl = "https://unpkg.com/@asyncapi/react-component@0.19.0/lib/styles/fiori.css",  # noqa: E501
+    asyncapi_js_url: str = "https://unpkg.com/@asyncapi/web-component@0.24/lib/asyncapi-web-component.js",  # noqa: E501
+    asyncapi_css_url: str = "https://unpkg.com/@asyncapi/react-component@0.24/lib/styles/fiori.css",  # noqa: E501
 ):
     html = f"""
     <!DOCTYPE html>
@@ -90,17 +110,3 @@ def get_asyncapi_html(
     </html>
     """
     return HTMLResponse(html)
-
-
-app = FastAPI(title="MyAPI", version="1.0.0", docs_url=None)
-
-
-@app.get("/asyncapi.json")
-async def asyncapi_json():
-    return get_asyncapi(title=app.title, version=app.version, routes=app.routes)
-
-
-@app.get("/docs")
-async def asyncapi_docs():
-    asyncapi_url = AnyHttpUrl("http://localhost:8000/asyncapi.json", scheme="http")
-    return get_asyncapi_html(asyncapi_url=asyncapi_url, title=app.title)
