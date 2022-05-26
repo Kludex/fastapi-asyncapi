@@ -1,4 +1,5 @@
 from fastapi import FastAPI, WebSocket
+from fastapi.responses import JSONResponse
 from pydantic import AnyHttpUrl
 
 from fastapi_asyncapi import get_asyncapi, get_asyncapi_html
@@ -8,7 +9,10 @@ app = FastAPI(title="MyAPI", version="1.0.0", docs_url=None)
 
 @app.get("/asyncapi.json")
 async def asyncapi_json():
-    return get_asyncapi(title=app.title, version=app.version, routes=app.routes)
+    return JSONResponse(
+        get_asyncapi(title=app.title, version=app.version, routes=app.routes),
+        media_type="application/vnd.aai.asyncapi+json;version=2.4.0",
+    )
 
 
 @app.get("/docs")
@@ -27,6 +31,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
 def test_application():
     schema = get_asyncapi(title=app.title, version=app.version, routes=app.routes)
+    # import json
+
     # print(json.dumps(schema, indent=4, sort_keys=True))
     assert schema == {
         "asyncapi": "2.4.0",
@@ -64,5 +70,6 @@ def test_application():
                 }
             },
         },
+        "defaultContentType": "application/json",
         "info": {"title": "MyAPI", "version": "1.0.0"},
     }

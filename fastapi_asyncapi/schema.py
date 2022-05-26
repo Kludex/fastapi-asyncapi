@@ -170,20 +170,20 @@ MessagesTraits = List[MessageTrait]
 
 
 class Message(BaseModel):
-    headers: Optional[Union[Schema, Reference]]
-    payload: Optional[Any]
-    correlationId: Optional[Union[CorrelationID, Reference]]
-    schemaFormat: Optional[str]
-    contentType: Optional[str]
-    name: Optional[str]
-    title: Optional[str]
-    summary: Optional[str]
-    description: Optional[str]
-    tags: Optional[List[Tag]]
-    externalDocs: Optional[ExternalDocumentation]
-    bindings: Optional[MessageBinding]
-    examples: Optional[ExamplesMessages]
-    traits: Optional[MessagesTraits]
+    headers: Optional[Union[Schema, Reference]] = None
+    payload: Optional[Any] = None
+    correlationId: Optional[Union[CorrelationID, Reference]] = None
+    schemaFormat: Optional[str] = None
+    contentType: Optional[str] = None
+    name: Optional[str] = None
+    title: Optional[str] = None
+    summary: Optional[str] = None
+    description: Optional[str] = None
+    tags: Optional[List[Tag]] = None
+    externalDocs: Optional[ExternalDocumentation] = None
+    bindings: Optional[MessageBinding] = None
+    examples: Optional[ExamplesMessages] = None
+    traits: Optional[MessagesTraits] = None
 
 
 class Operation(BaseModel):
@@ -195,10 +195,6 @@ class Operation(BaseModel):
     bindings: Optional[Bindings] = None
     traits: Optional[OperationTraits] = None
     message: Optional[Message] = None
-
-
-Subscribe = Operation
-Publish = Operation
 
 
 class Parameter(BaseModel):
@@ -217,13 +213,10 @@ class ChannelItem(BaseModel):
     ref: Optional[str] = Field(default=None, alias="$ref")
     description: Optional[str] = None
     servers: Optional[List[str]] = None
-    subscribe: Optional[Subscribe] = None
-    publish: Optional[Publish] = None
+    subscribe: Optional[Operation] = None
+    publish: Optional[Operation] = None
     parameters: Optional[Parameters] = None
     bindings: Optional[Union[ChannelBindings, Reference]] = None
-
-    # class Config:
-    #     allow_population_by_field_name = True
 
 
 Security = Dict[str, List[str]]
@@ -309,16 +302,19 @@ class Components(BaseModel):
         extra = "allow"
 
 
+Identifier = str
+
+
 class AsyncAPI(BaseModel):
     asyncapi: str
-    id: Optional[str]
+    id: Optional[Identifier]
     info: Info
-    servers: Optional[Dict[str, Server]]
-    defaultContentType: Optional[str]
+    servers: Optional[Dict[str, Server]] = None
+    defaultContentType: str = "application/json"
     channels: Channels
-    components: Optional[Components]
+    components: Optional[Components] = None
     tags: Optional[List[Tag]]
-    externalDocs: Optional[ExternalDocumentation]
+    externalDocs: Optional[ExternalDocumentation] = None
 
     # @root_validator(pre=True)
     # def validate_security(cls, values):
