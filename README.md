@@ -1,5 +1,5 @@
 <h1 align="center">
-    <strong>fastapi-asyncapi</strong>
+    <strong>Fastapi AsyncAPI</strong>
 </h1>
 <p align="center">
     <a href="https://github.com/Kludex/fastapi-asyncapi" target="_blank">
