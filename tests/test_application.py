@@ -41,7 +41,7 @@ def test_application():
                             "type": "request",
                         }
                     },
-                    "operationId": "asyncapi_json",
+                    "operationId": "asyncapi_json_asyncapi_json_get",
                 },
             },
             "/docs": {
@@ -54,7 +54,7 @@ def test_application():
                             "type": "request",
                         }
                     },
-                    "operationId": "asyncapi_docs",
+                    "operationId": "asyncapi_docs_docs_get",
                 },
             },
             "/ws": {
