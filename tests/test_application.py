@@ -57,6 +57,12 @@ def test_application():
                     "operationId": "asyncapi_docs",
                 },
             },
+            "/ws": {
+                "subscribe": {
+                    "bindings": {"ws": {"bindingVersion": "latest", "method": "GET"}},
+                    "operationId": "websocket_endpoint",
+                }
+            },
         },
         "info": {"title": "MyAPI", "version": "1.0.0"},
     }
