@@ -5,7 +5,7 @@ help: ## Show this help
 .PHONY: lint
 lint:  ## Linter the code.
 	isort fastapi_asyncapi tests --check
-	flake8 .
+	flake8 fastapi_asyncapi tests
 	mypy fastapi_asyncapi
 
 .PHONY: test
