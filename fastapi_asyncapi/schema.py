@@ -2,7 +2,7 @@ import sys
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field, Json, root_validator
+from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field, Json
 
 if sys.version_info < (3, 8):
     from typing_extensions import Literal, TypeAlias

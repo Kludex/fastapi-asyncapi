@@ -1,6 +1,5 @@
 from typing import Any, Dict, List, Literal, Optional, Sequence
 
-from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi.routing import APIRoute
@@ -79,8 +78,8 @@ def get_asyncapi_html(
     *,
     asyncapi_url: AnyHttpUrl,
     title: str,
-    asyncapi_js_url: str = "https://unpkg.com/@asyncapi/web-component@0.24/lib/asyncapi-web-component.js",
-    asyncapi_css_url: str = "https://unpkg.com/@asyncapi/react-component@0.24/lib/styles/fiori.css",
+    asyncapi_js_url: str = "https://unpkg.com/@asyncapi/web-component@0.24/lib/asyncapi-web-component.js",  # noqa: E501
+    asyncapi_css_url: str = "https://unpkg.com/@asyncapi/react-component@0.24/lib/styles/fiori.css",  # noqa: E501
 ):
     html = f"""
     <!DOCTYPE html>

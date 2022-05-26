@@ -1,5 +1,3 @@
-import json
-
 from fastapi import FastAPI
 from pydantic import AnyHttpUrl
 
@@ -21,7 +19,7 @@ async def asyncapi_docs():
 
 def test_application():
     schema = get_asyncapi(title=app.title, version=app.version, routes=app.routes)
-    print(json.dumps(schema, indent=4, sort_keys=True))
+    # print(json.dumps(schema, indent=4, sort_keys=True))
     assert schema == {
         "asyncapi": "2.4.0",
         "channels": {
