@@ -102,16 +102,13 @@ Schema: TypeAlias = Json
 class HTTPOperationBinding(BaseModel):
     type: Literal["request", "response"]
     method: HTTPMethod
-    query: Optional[Schema]
-    bindingVersion: Optional[Union[Literal["latest"], str]]
+    query: Optional[Schema] = None
+    bindingVersion: Optional[Union[Literal["latest"], str]] = "latest"
 
 
 # TODO: Missing other bindings!
-class OperationBinding(BaseModel):
+class Bindings(BaseModel):
     http: Optional[HTTPOperationBinding]
-
-
-Bindings = List[Dict[str, OperationBinding]]
 
 
 class OperationTrait(BaseModel):
@@ -183,14 +180,14 @@ class Message(BaseModel):
 
 
 class Operation(BaseModel):
-    operationId: Optional[str]
-    summary: Optional[str]
-    description: Optional[str]
-    tags: List[Tag]
-    externalDocs: Optional[ExternalDocumentation]
-    bindings: Optional[Bindings]
-    traits: Optional[OperationTraits]
-    message: Optional[Message]
+    operationId: Optional[str] = None
+    summary: Optional[str] = None
+    description: Optional[str] = None
+    tags: Optional[List[Tag]] = None
+    externalDocs: Optional[ExternalDocumentation] = None
+    bindings: Optional[Bindings] = None
+    traits: Optional[OperationTraits] = None
+    message: Optional[Message] = None
 
 
 Subscribe = Operation
@@ -210,13 +207,13 @@ ChannelBindings = Dict[str, Any]
 
 
 class ChannelItem(BaseModel):
-    ref: Optional[str] = Field(alias="$ref")
-    description: Optional[str]
-    servers: Optional[List[str]]
-    subscribe: Optional[Subscribe]
-    publish: Optional[Publish]
-    parameters: Optional[Parameters]
-    bindings: Optional[Union[ChannelBindings, Reference]]
+    ref: Optional[str] = Field(default=None, alias="$ref")
+    description: Optional[str] = None
+    servers: Optional[List[str]] = None
+    subscribe: Optional[Subscribe] = None
+    publish: Optional[Publish] = None
+    parameters: Optional[Parameters] = None
+    bindings: Optional[Union[ChannelBindings, Reference]] = None
 
 
 Security = Dict[str, List[str]]
@@ -295,7 +292,7 @@ class Components(BaseModel):
     messageTraits: Optional[Dict[str, Union[MessageTrait, Reference]]]
     serverBindings: Optional[Dict[str, Union[ServerBinding, Reference]]]
     channelBindings: Optional[Dict[str, Union[ChannelBinding, Reference]]]
-    operationBindings: Optional[Dict[str, Union[OperationBinding, Reference]]]
+    operationBindings: Optional[Dict[str, Union[Bindings, Reference]]]
     messageBindings: Optional[Dict[str, Union[MessageBinding, Reference]]]
 
     class Config:
@@ -313,11 +310,11 @@ class AsyncAPI(BaseModel):
     tags: Optional[List[Tag]]
     externalDocs: Optional[ExternalDocumentation]
 
-    @root_validator(pre=True)
-    def validate_security(cls, values):
-        for server_name, server in values.get("servers").items():
-            for security_req in server["security"]:
-                cls._validate_security_requirement(security_req, server, values)
+    # @root_validator(pre=True)
+    # def validate_security(cls, values):
+    #     for server_name, server in values.get("servers").items():
+    #         for security_req in server["security"]:
+    #             cls._validate_security_requirement(security_req, server, values)
 
     @classmethod
     def _validate_security_requirement(
