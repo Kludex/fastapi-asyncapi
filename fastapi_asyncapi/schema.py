@@ -106,9 +106,16 @@ class HTTPOperationBinding(BaseModel):
     bindingVersion: Optional[Union[Literal["latest"], str]] = "latest"
 
 
-# TODO: Missing other bindings!
+class WSOperationBinding(BaseModel):
+    method: Literal["GET", "POST"] = "GET"
+    query: Optional[Schema] = None
+    headers: Optional[Schema] = None
+    bindingVersion: Optional[Union[Literal["latest"], str]] = "latest"
+
+
 class Bindings(BaseModel):
-    http: Optional[HTTPOperationBinding]
+    http: Optional[HTTPOperationBinding] = None
+    ws: Optional[WSOperationBinding] = None
 
 
 class OperationTrait(BaseModel):
@@ -214,6 +221,9 @@ class ChannelItem(BaseModel):
     publish: Optional[Publish] = None
     parameters: Optional[Parameters] = None
     bindings: Optional[Union[ChannelBindings, Reference]] = None
+
+    # class Config:
+    #     allow_population_by_field_name = True
 
 
 Security = Dict[str, List[str]]

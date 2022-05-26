@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Literal, Optional, Sequence
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
-from fastapi.routing import APIRoute
+from fastapi.routing import APIRoute, APIWebSocketRoute
 from pydantic import AnyHttpUrl
 from starlette.routing import BaseRoute
 
@@ -18,6 +18,7 @@ from fastapi_asyncapi.schema import (
     Server,
     Subscribe,
     Tag,
+    WSOperationBinding,
 )
 
 
@@ -56,6 +57,15 @@ def get_asyncapi(
                             type="request", method=next(iter(route.methods))
                         )
                     ),
+                ),
+            )
+            channels[route.path] = channel
+        elif isinstance(route, APIWebSocketRoute):
+            channel = ChannelItem(
+                ref=route.path,
+                subscribe=Subscribe(
+                    operationId=route.endpoint.__name__,  # TODO: Copy FastAPI here.
+                    bindings=Bindings(ws=WSOperationBinding()),
                 ),
             )
             channels[route.path] = channel

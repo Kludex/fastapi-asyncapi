@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from pydantic import AnyHttpUrl
 
 from fastapi_asyncapi import get_asyncapi, get_asyncapi_html
@@ -15,6 +15,14 @@ async def asyncapi_json():
 async def asyncapi_docs():
     asyncapi_url = AnyHttpUrl("asyncapi.json", scheme="http")
     return get_asyncapi_html(asyncapi_url=asyncapi_url, title=app.title)
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"Message text was: {data}")
 
 
 def test_application():
