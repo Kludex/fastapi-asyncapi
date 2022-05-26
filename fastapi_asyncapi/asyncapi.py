@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Literal, Optional, Sequence
+from typing import Any, Dict, List, Literal, Optional, Sequence, cast
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
@@ -12,11 +12,12 @@ from fastapi_asyncapi.schema import (
     ChannelItem,
     Channels,
     Contact,
+    HTTPMethod,
     HTTPOperationBinding,
     Info,
     License,
+    Operation,
     Server,
-    Subscribe,
     Tag,
     WSOperationBinding,
 )
@@ -34,7 +35,7 @@ def get_asyncapi(
     contact: Optional[Contact] = None,
     license: Optional[License] = None,
     tags: Optional[List[Tag]] = None,
-    servers: Optional[List[Server]] = None,
+    servers: Optional[Dict[str, Server]] = None,
 ) -> Dict[str, Any]:
     info = Info(
         title=title,
@@ -50,11 +51,11 @@ def get_asyncapi(
             channel = ChannelItem(
                 ref=route.path,
                 description=route.description,
-                subscribe=Subscribe(
+                subscribe=Operation(
                     operationId=route.unique_id,
                     bindings=Bindings(
                         http=HTTPOperationBinding(
-                            type="request", method=next(iter(route.methods))
+                            type="request", method=cast(HTTPMethod, min(route.methods))
                         )
                     ),
                 ),
@@ -63,7 +64,7 @@ def get_asyncapi(
         elif isinstance(route, APIWebSocketRoute):
             channel = ChannelItem(
                 ref=route.path,
-                subscribe=Subscribe(
+                subscribe=Operation(
                     operationId=route.name,  # TODO: Create the same `unique_id`.
                     bindings=Bindings(ws=WSOperationBinding()),
                 ),
