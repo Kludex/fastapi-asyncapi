@@ -15,7 +15,7 @@ async def asyncapi_json():
     )
 
 
-@app.get("/docs")
+@app.get("/docs", tags=["Docs"])
 async def asyncapi_docs():
     asyncapi_url = AnyHttpUrl("asyncapi.json", scheme="http")
     return get_asyncapi_html(asyncapi_url=asyncapi_url, title=app.title)
@@ -35,7 +35,7 @@ def test_application():
 
     # print(json.dumps(schema, indent=4, sort_keys=True))
     assert schema == {
-        "asyncapi": "2.4.0",
+        "asyncapi": "2.2.0",
         "channels": {
             "/asyncapi.json": {
                 "description": "",
@@ -48,6 +48,7 @@ def test_application():
                         }
                     },
                     "operationId": "asyncapi_json_asyncapi_json_get",
+                    "tags": [],
                 },
             },
             "/docs": {
@@ -61,6 +62,7 @@ def test_application():
                         }
                     },
                     "operationId": "asyncapi_docs_docs_get",
+                    "tags": [{"name": "Docs"}],
                 },
             },
             "/ws": {

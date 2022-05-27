@@ -28,7 +28,7 @@ def get_asyncapi(
     title: str,
     version: str,
     routes: Sequence[BaseRoute],
-    asyncapi_version: Literal["2.4.0"] = "2.4.0",
+    asyncapi_version: Literal["2.2.0"] = "2.2.0",
     id: Optional[str] = None,
     description: Optional[str] = None,
     terms_of_service: Optional[AnyHttpUrl] = None,
@@ -52,6 +52,7 @@ def get_asyncapi(
                 ref=route.path,
                 description=route.description,
                 subscribe=Operation(
+                    tags=[Tag(name=str(tag)) for tag in route.tags],
                     operationId=route.unique_id,
                     bindings=Bindings(
                         http=HTTPOperationBinding(
@@ -89,8 +90,8 @@ def get_asyncapi_html(
     *,
     asyncapi_url: AnyHttpUrl,
     title: str,
-    asyncapi_js_url: str = "https://unpkg.com/@asyncapi/web-component@0.24/lib/asyncapi-web-component.js",  # noqa: E501
-    asyncapi_css_url: str = "https://unpkg.com/@asyncapi/react-component@0.24/lib/styles/fiori.css",  # noqa: E501
+    asyncapi_js_url: str = "https://unpkg.com/@asyncapi/web-component@1.0.0-next.32/lib/asyncapi-web-component.js",  # noqa: E501
+    asyncapi_css_url: str = "https://unpkg.com/@asyncapi/react-component@1.0.0-next.32/styles/default.min.css",  # noqa: E501
 ):
     html = f"""
     <!DOCTYPE html>

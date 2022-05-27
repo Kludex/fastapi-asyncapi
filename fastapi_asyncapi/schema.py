@@ -38,8 +38,8 @@ class ExternalDocumentation(BaseModel):
 
 class Tag(BaseModel):
     name: str
-    description: Optional[str]
-    externalDocs: Optional[ExternalDocumentation]
+    description: Optional[str] = None
+    externalDocs: Optional[ExternalDocumentation] = None
 
     class Config:
         extra = "allow"
