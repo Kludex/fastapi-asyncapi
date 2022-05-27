@@ -47,7 +47,7 @@ def get_asyncapi(
     )
     channels: Channels = {}
     for route in routes:
-        if isinstance(route, APIRoute):
+        if isinstance(route, APIRoute) and route.include_in_schema:
             channel = ChannelItem(
                 ref=route.path,
                 description=route.description,
