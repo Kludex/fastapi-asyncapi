@@ -7,7 +7,7 @@ from fastapi_asyncapi import get_asyncapi, get_asyncapi_html
 app = FastAPI(title="MyAPI", version="1.0.0", docs_url=None)
 
 
-@app.get("/asyncapi.json")
+@app.get("/asyncapi.json", include_in_schema=False)
 async def asyncapi_json():
     return JSONResponse(
         get_asyncapi(title=app.title, version=app.version, routes=app.routes),
@@ -37,20 +37,6 @@ def test_application():
     assert schema == {
         "asyncapi": "2.2.0",
         "channels": {
-            "/asyncapi.json": {
-                "description": "",
-                "subscribe": {
-                    "bindings": {
-                        "http": {
-                            "bindingVersion": "latest",
-                            "method": "GET",
-                            "type": "request",
-                        }
-                    },
-                    "operationId": "asyncapi_json_asyncapi_json_get",
-                    "tags": [],
-                },
-            },
             "/docs": {
                 "description": "",
                 "subscribe": {
