@@ -15,6 +15,7 @@
     <img src="https://img.shields.io/github/license/Kludex/fastapi-asyncapi">
 </p>
 
+> This package is not completed. Help is wanted.
 
 ## Installation
 
