@@ -1,8 +1,8 @@
-# FastAPI AsyncAPI
+# FastAPI-AsyncAPI
 
-Currently, OpenAPI doesn't have support for WebSockets. AsyncAPI comes in as an alternative to it.
+FastAPI-AsyncAPI is a utility tool to write documentation for your [FastAPI](https://fastapi.tiangolo.com/) endpoints using [AsyncAPI](https://www.asyncapi.com/).
 
-FastAPI supports WebSockets, but there's no way to document those endpoints. FastAPI-AsyncAPI makes that possible.
+It provides support for WebSockets, which is currently missing in OpenAPI.
 
 ## Usage
 
