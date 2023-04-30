@@ -1,6 +1,6 @@
 # FastAPI-AsyncAPI
 
-FastAPI-AsyncAPI is a utility tool to write documentation for your [FastAPI](https://fastapi.tiangolo.com/) endpoints using [AsyncAPI](https://github.com/asyncapi/spec).
+FastAPI-AsyncAPI is a utility tool to write documentation for your [FastAPI](https://fastapi.tiangolo.com/) endpoints using [AsyncAPI](https://www.asyncapi.com/).
 
 It provides support for WebSockets, which is currently missing in OpenAPI.
 

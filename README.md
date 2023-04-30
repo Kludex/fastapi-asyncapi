@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/github/license/Kludex/fastapi-asyncapi">
 </p>
 
-FastAPI-AsyncAPI is a utility tool to write documentation for your [FastAPI](https://fastapi.tiangolo.com/) endpoints using [AsyncAPI](https://github.com/asyncapi/spec).
+FastAPI-AsyncAPI is a utility tool to write documentation for your [FastAPI](https://github.com/tiangolo/fastapi) endpoints using [AsyncAPI](https://github.com/asyncapi).
 
 It provides support for WebSockets, which is currently missing in OpenAPI.
 
