@@ -1,8 +1,8 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import JSONResponse
-from pydantic import AnyHttpUrl
+from pydantic import BaseModel
 
-from fastapi_asyncapi import get_asyncapi, get_asyncapi_html
+from fastapi_asyncapi import get_asyncapi, get_asyncapi_html, SubscribeMessage, PublishMessage
 
 app = FastAPI(title="MyAPI", version="1.0.0", docs_url=None)
 
@@ -17,12 +17,20 @@ async def asyncapi_json():
 
 @app.get("/docs", tags=["Docs"])
 async def asyncapi_docs():
-    asyncapi_url = AnyHttpUrl("asyncapi.json", scheme="http")
-    return get_asyncapi_html(asyncapi_url=asyncapi_url, title=app.title)
+    return get_asyncapi_html(asyncapi_url="asyncapi.json", title=app.title)
+
+
+class MyMessage(BaseModel):
+    kind: str
+
+
+class MyMessage2(BaseModel):
+    text: str
 
 
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket, msg: MyMessage = SubscribeMessage(),
+                             m2: MyMessage = PublishMessage(), m3: MyMessage2 = PublishMessage()):
     await websocket.accept()
     while True:
         data = await websocket.receive_text()
@@ -54,10 +62,41 @@ def test_application():
             "/ws": {
                 "subscribe": {
                     "bindings": {"ws": {"bindingVersion": "latest", "method": "GET"}},
-                    "operationId": "websocket_endpoint",
+                    "operationId": "websocket_endpoint_subscribe",
+                    "message": {"$ref": "#/components/messages/MyMessage"},
+                },
+                "publish": {
+                    "operationId": "websocket_endpoint_publish",
+                    "bindings": {"ws": {"method": "GET","bindingVersion": "latest"}},
+                    "message": {
+                        "oneOf": [
+                            {"$ref": "#/components/messages/MyMessage"},
+                            {"$ref": "#/components/messages/MyMessage2"}
+                        ]
+                    }
                 }
             },
         },
         "defaultContentType": "application/json",
         "info": {"title": "MyAPI", "version": "1.0.0"},
+        "components": {
+            "messages": {
+                "MyMessage": {
+                    "payload": {
+                        "properties": {"kind": {"title": "Kind", "type": "string"}},
+                        "required": ["kind"],
+                        "title": "MyMessage",
+                        "type": "object"
+                    }
+                },
+                "MyMessage2": {
+                    "payload": {
+                        "properties": {"text": {"title": "Text", "type": "string"}},
+                        "required": ["text"],
+                        "title": "MyMessage2",
+                        "type": "object"
+                    }
+                }
+            }
+        }
     }
