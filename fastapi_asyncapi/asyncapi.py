@@ -1,10 +1,10 @@
-from typing import Any, Dict, List, Literal, Optional, Sequence, cast, Callable, Type
+from inspect import cleandoc
+from typing import Any, Dict, List, Literal, Optional, Sequence, cast
 
 from fastapi.encoders import jsonable_encoder
-from fastapi.params import Depends
 from fastapi.responses import HTMLResponse
 from fastapi.routing import APIRoute, APIWebSocketRoute
-from pydantic import AnyHttpUrl, BaseModel
+from pydantic import AnyHttpUrl
 from starlette.routing import BaseRoute
 
 from fastapi_asyncapi.schema import (
@@ -93,8 +93,12 @@ def get_asyncapi(
                     payload=msg.model_json_schema(),
                 )
 
+            doc = None
+            if callable(route.dependant.cache_key[0]):
+                doc = cleandoc(route.dependant.cache_key[0].__doc__)
             channel = ChannelItem(
                 ref=route.path,
+                description=doc,
                 subscribe=Operation(
                     operationId=f"{route.name}_subscribe",
                     bindings=Bindings(ws=WSOperationBinding()),

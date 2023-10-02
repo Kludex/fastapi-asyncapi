@@ -31,6 +31,9 @@ class MyMessage2(BaseModel):
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, msg: MyMessage = SubscribeMessage(),
                              m2: MyMessage = PublishMessage(), m3: MyMessage2 = PublishMessage()):
+    """
+    This endpoint creates a websocket connection to the service.
+    """
     await websocket.accept()
     while True:
         data = await websocket.receive_text()
@@ -60,6 +63,7 @@ def test_application():
                 },
             },
             "/ws": {
+                "description": "This endpoint creates a websocket connection to the service.",
                 "subscribe": {
                     "bindings": {"ws": {"bindingVersion": "latest", "method": "GET"}},
                     "operationId": "websocket_endpoint_subscribe",
@@ -67,7 +71,7 @@ def test_application():
                 },
                 "publish": {
                     "operationId": "websocket_endpoint_publish",
-                    "bindings": {"ws": {"method": "GET","bindingVersion": "latest"}},
+                    "bindings": {"ws": {"method": "GET", "bindingVersion": "latest"}},
                     "message": {
                         "oneOf": [
                             {"$ref": "#/components/messages/MyMessage"},
