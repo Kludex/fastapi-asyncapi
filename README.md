@@ -46,8 +46,7 @@ async def asyncapi_json():
 
 @app.get("/docs")
 async def asyncapi_docs():
-    asyncapi_url = AnyHttpUrl("asyncapi.json", scheme="http")
-    return get_asyncapi_html(asyncapi_url=asyncapi_url, title=app.title)
+    return get_asyncapi_html(asyncapi_url="asyncapi.json", title=app.title)
 ```
 
 
