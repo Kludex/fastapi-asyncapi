@@ -143,9 +143,9 @@ def get_asyncapi_html(
         *,
         asyncapi_url: AnyHttpUrl,
         title: str,
-        asyncapi_js_url: str = "https://unpkg.com/@asyncapi/web-component@1.0.0-next.32/lib/asyncapi-web-component.js",
+        asyncapi_js_url: str = "https://unpkg.com/@asyncapi/react-component@latest/browser/standalone/index.js",
         # noqa: E501
-        asyncapi_css_url: str = "https://unpkg.com/@asyncapi/react-component@1.0.0-next.32/styles/default.min.css",
+        asyncapi_css_url: str = "https://unpkg.com/@asyncapi/react-component@latest/styles/default.min.css",
         # noqa: E501
 ):
     html = f"""
@@ -155,14 +155,26 @@ def get_asyncapi_html(
         <title>{title}</title>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{asyncapi_css_url}">
     </head>
     <body>
-        <script src="{asyncapi_js_url}" defer></script>
+    
+        <div id="asyncapi"></div>
 
-        <asyncapi-component
-            schemaUrl="{asyncapi_url}"
-            cssImportPath="{asyncapi_css_url}">
-        </asyncapi-component>
+        <script src="{asyncapi_js_url}"></script>
+        <script>
+          AsyncApiStandalone.render({{
+            schema: {{
+              url: '{asyncapi_url}',
+              options: {{ method: "GET", mode: "cors" }},
+            }},
+            config: {{
+              show: {{
+                sidebar: true,
+              }}
+            }},
+          }}, document.getElementById('asyncapi'));
+        </script>
     </body>
     </html>
     """
