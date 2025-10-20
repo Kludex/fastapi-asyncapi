@@ -15,7 +15,7 @@ else:
 
 
 def get_supported_scopes(
-    flows: Dict[str, Optional[Dict[str, str]]],
+        flows: Dict[str, Optional[Dict[str, str]]],
 ) -> List[str]:
     scopes = []
     for key, value in flows.items():
@@ -23,6 +23,10 @@ def get_supported_scopes(
             for scope in value["scopes"]:
                 scopes.append(scope)
     return scopes
+
+
+class OneOf(BaseModel):
+    oneOf: List[Any]
 
 
 class Contact(BaseModel):
@@ -194,17 +198,16 @@ class Operation(BaseModel):
     externalDocs: Optional[ExternalDocumentation] = None
     bindings: Optional[Bindings] = None
     traits: Optional[OperationTraits] = None
-    message: Optional[Message] = None
+    message: Optional[Union[Message, OneOf, Reference]] = None
 
 
 class Parameter(BaseModel):
     description: Optional[str]
-    _schema: Optional[Schema] = Field(alias="schema")
+    schema_: Optional[Schema] = Field(alias="schema")
     location: Optional[str]
 
 
 Parameters = List[Dict[str, Union[Parameter, Reference]]]
-
 
 ChannelBindings = Dict[str, Any]
 
@@ -273,7 +276,7 @@ class SecurityScheme(BaseModel):
     type: SecuritySchemesType
     description: Optional[str]
     name: str
-    _in: str = Field(alias="in")
+    in_: str = Field(alias="in")
     scheme: str
     bearerFormat: Optional[str]
     flows: OAUHTFlows
@@ -284,19 +287,19 @@ ChannelBinding = Dict[str, Any]
 
 
 class Components(BaseModel):
-    schemas: Optional[Dict[str, Union[Schema, Reference]]]
-    servers: Optional[Dict[str, Union[Server, Reference]]]
-    channels: Optional[Dict[str, ChannelItem]]
-    messages: Optional[Dict[str, Union[Message, Reference]]]
-    securitySchemes: Optional[Dict[str, Union[SecurityScheme, Reference]]]
-    parameters: Optional[Dict[str, Union[Parameter, Reference]]]
-    correlationIds: Optional[Dict[str, Union[CorrelationID, Reference]]]
-    operationTraits: Optional[Dict[str, Union[OperationTraits, Reference]]]
-    messageTraits: Optional[Dict[str, Union[MessageTrait, Reference]]]
-    serverBindings: Optional[Dict[str, Union[ServerBinding, Reference]]]
-    channelBindings: Optional[Dict[str, Union[ChannelBinding, Reference]]]
-    operationBindings: Optional[Dict[str, Union[Bindings, Reference]]]
-    messageBindings: Optional[Dict[str, Union[MessageBinding, Reference]]]
+    schemas: Optional[Dict[str, Union[Schema, Reference]]] = None
+    servers: Optional[Dict[str, Union[Server, Reference]]] = None
+    channels: Optional[Dict[str, ChannelItem]] = None
+    messages: Optional[Dict[str, Union[Message, Reference]]] = None
+    securitySchemes: Optional[Dict[str, Union[SecurityScheme, Reference]]] = None
+    parameters: Optional[Dict[str, Union[Parameter, Reference]]] = None
+    correlationIds: Optional[Dict[str, Union[CorrelationID, Reference]]] = None
+    operationTraits: Optional[Dict[str, Union[OperationTraits, Reference]]] = None
+    messageTraits: Optional[Dict[str, Union[MessageTrait, Reference]]] = None
+    serverBindings: Optional[Dict[str, Union[ServerBinding, Reference]]] = None
+    channelBindings: Optional[Dict[str, Union[ChannelBinding, Reference]]] = None
+    operationBindings: Optional[Dict[str, Union[Bindings, Reference]]] = None
+    messageBindings: Optional[Dict[str, Union[MessageBinding, Reference]]] = None
 
     class Config:
         extra = "allow"
@@ -324,10 +327,10 @@ class AsyncAPI(BaseModel):
 
     @classmethod
     def _validate_security_requirement(
-        cls,
-        requirement: SecurityRequirement,
-        required_by: str,
-        values,
+            cls,
+            requirement: SecurityRequirement,
+            required_by: str,
+            values,
     ) -> None:
         (security_scheme_name, scopes), *other = requirement.items()
 
@@ -366,9 +369,9 @@ class AsyncAPI(BaseModel):
 
     @classmethod
     def __get_security_scheme(
-        cls,
-        values: Dict[str, Any],
-        security_scheme_name: str,
+            cls,
+            values: Dict[str, Any],
+            security_scheme_name: str,
     ) -> Optional[Dict[str, Any]]:
         security_scheme = None
         components = values.get("components")
